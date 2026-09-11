@@ -1,0 +1,45 @@
+import type { AppTranslationKey } from "./en";
+
+/** Shared Hindi strings. Written as natural spoken Hindi, not literal translation. */
+export const appHi: Record<AppTranslationKey, string> = {
+  "language.label": "भाषा",
+  "language.hindi": "हिन्दी",
+  "language.english": "English",
+  "language.chooseHindi": "हिन्दी में देखें",
+  "language.chooseEnglish": "अंग्रेज़ी में देखें",
+
+  "a11y.title": "सुलभता",
+  "a11y.open": "सुलभता सेटिंग खोलें",
+  "a11y.textSize": "अक्षरों का आकार",
+  "a11y.decreaseText": "अक्षर छोटे करें",
+  "a11y.increaseText": "अक्षर बड़े करें",
+  "a11y.contrast": "अधिक कंट्रास्ट",
+  "a11y.motion": "कम एनिमेशन",
+  "a11y.reset": "सुलभता सेटिंग रीसेट करें",
+
+  "voice.title": "पढ़कर सुनाएँ",
+  "voice.on": "पढ़कर सुनाना चालू",
+  "voice.off": "पढ़कर सुनाना बंद",
+  "voice.toggle": "पढ़कर सुनाना चालू या बंद करें",
+  "voice.hint": "चालू होने पर जिस चीज़ पर आप जाएँगे, MediKiosk उसे बोलकर सुनाएगा।",
+  "voice.speed": "बोलने की गति",
+  "voice.speed.slow": "धीमा",
+  "voice.speed.normal": "सामान्य",
+  "voice.speed.fast": "तेज़",
+  "voice.stop": "रोकें",
+  "voice.speaking": "बोल रहे हैं",
+  "voice.listen": "सुनें",
+  "voice.listenTo": "यह जानकारी सुनें",
+  "voice.unsupported": "इस ब्राउज़र में पढ़कर सुनाने की सुविधा उपलब्ध नहीं है।",
+
+  "common.home": "होम",
+  "common.help": "मदद चाहिए?",
+  "common.start": "शुरू करें",
+  "common.continue": "आगे बढ़ें",
+  "common.back": "पीछे जाएँ",
+  "common.close": "बंद करें",
+  "common.menu": "मेन्यू",
+  "common.search": "खोजें",
+  "common.settings": "सेटिंग",
+  "common.skipToContent": "मुख्य सामग्री पर जाएँ",
+};
