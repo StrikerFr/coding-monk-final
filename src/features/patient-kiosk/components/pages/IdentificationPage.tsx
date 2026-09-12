@@ -24,6 +24,22 @@ export function IdentificationPage() {
   const [gender, setGender] = useState(session?.profile["gender"] ?? "");
   const [phone, setPhone] = useState(session?.profile["phone"] ?? "");
 
+  const updateProfileField = (key: "name" | "age" | "gender" | "phone", val: string) => {
+    if (key === "name") setName(val);
+    if (key === "age") setAge(val);
+    if (key === "gender") setGender(val);
+    if (key === "phone") setPhone(val);
+    updateSession({
+      profile: {
+        ...(session?.profile ?? {}),
+        name: key === "name" ? val : name,
+        age: key === "age" ? val : age,
+        gender: key === "gender" ? val : gender,
+        phone: key === "phone" ? val : phone,
+      },
+    });
+  };
+
   const cards: KioskSubStep[] = [
     {
       id: "name",
@@ -32,7 +48,7 @@ export function IdentificationPage() {
         <KioskVoiceAnswer
           questionKey="kiosk.id.nameQuestion"
           answer={name}
-          onAnswer={(text) => setName(text)}
+          onAnswer={(text) => updateProfileField("name", text)}
         />
       ),
     },
@@ -46,7 +62,7 @@ export function IdentificationPage() {
             hintKey="kiosk.id.ageHint"
             value={age}
             maxLength={3}
-            onChange={setAge}
+            onChange={(val) => updateProfileField("age", val)}
           />
         </div>
       ),
@@ -64,7 +80,7 @@ export function IdentificationPage() {
                 key={option.id}
                 tkey={option.key}
                 selected={gender === option.id}
-                onSelect={() => setGender(gender === option.id ? "" : option.id)}
+                onSelect={() => updateProfileField("gender", gender === option.id ? "" : option.id)}
               />
             ))}
           </div>
@@ -80,7 +96,7 @@ export function IdentificationPage() {
             hintKey="kiosk.id.phoneHint"
             value={phone}
             maxLength={10}
-            onChange={setPhone}
+            onChange={(val) => updateProfileField("phone", val)}
           />
         </div>
       ),

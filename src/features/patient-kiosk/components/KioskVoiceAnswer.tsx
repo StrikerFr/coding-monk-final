@@ -29,6 +29,21 @@ export function KioskVoiceAnswer({
   const [typedText, setTypedText] = useState(answer ?? "");
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const typedTextRef = useRef(typedText);
+  typedTextRef.current = typedText;
+  const onAnswerRef = useRef(onAnswer);
+  onAnswerRef.current = onAnswer;
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
+        onAnswerRef.current(typedTextRef.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     if (!typing) {
       setTypedText(answer ?? "");

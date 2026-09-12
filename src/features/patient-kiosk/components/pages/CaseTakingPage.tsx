@@ -45,7 +45,13 @@ export function CaseTakingPage() {
           stepId="case-taking"
           canContinue={Boolean(story.trim())}
           note="kiosk.voice.note"
-          onContinue={() => updateSession({ answers: { ...(session?.answers ?? {}), story } })}
+          onContinue={() => {
+            const trimmed = story.trim();
+            if (trimmed && trimmed !== session?.answers["story"]) {
+              void patientKioskApi.saveAnswer("story", trimmed, "voice");
+            }
+            updateSession({ answers: { ...(session?.answers ?? {}), story: trimmed } });
+          }}
         />
       </div>
     </KioskStepContainer>
