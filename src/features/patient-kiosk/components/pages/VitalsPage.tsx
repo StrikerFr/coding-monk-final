@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useKiosk } from "@/features/patient-kiosk/kiosk-context";
+import { patientKioskApi } from "@/features/patient-kiosk/api";
 import { stepNumber } from "@/features/patient-kiosk/session";
 import { KioskNumberPad } from "../KioskNumberPad";
 import { KioskStepContainer } from "../KioskStepContainer";
@@ -17,23 +18,50 @@ export function VitalsPage() {
   const [pulse, setPulse] = useState(session?.vitals["pulse"] ?? "");
   const [temperature, setTemperature] = useState(session?.vitals["temperature"] ?? "");
 
-  const updateVitals = (key: string, val: string) => {
+  // Rehydrate vitals from stored answers if empty in session (e.g. reload or back navigation)
+  useEffect(() => {
+    void patientKioskApi.listStoredAnswers().then((rows) => {
+      for (const row of rows) {
+        if (row.transcript.trim()) {
+          if (row.questionId === "height") setHeight((h) => h || row.transcript);
+          if (row.questionId === "weight") setWeight((w) => w || row.transcript);
+          if (row.questionId === "pulse") setPulse((p) => p || row.transcript);
+          if (row.questionId === "temperature") setTemperature((t) => t || row.transcript);
+        }
+      }
+    });
+  }, []);
+
+  const updateVital = (key: "height" | "weight" | "pulse" | "temperature", val: string) => {
     if (key === "height") setHeight(val);
     if (key === "weight") setWeight(val);
     if (key === "pulse") setPulse(val);
     if (key === "temperature") setTemperature(val);
+
+    const trimmed = val.trim();
     updateSession({
       vitals: {
-        height: key === "height" ? val : height,
-        weight: key === "weight" ? val : weight,
-        pulse: key === "pulse" ? val : pulse,
-        temperature: key === "temperature" ? val : temperature,
+        ...(session?.vitals ?? {}),
+        [key]: trimmed,
       },
     });
+
+    if (trimmed) {
+      void patientKioskApi.saveAnswer(key, trimmed, "typed");
+    }
   };
 
-  const syncAll = () => {
-    updateSession({ vitals: { height, weight, pulse, temperature } });
+  const syncAll = async () => {
+    const patch: Record<string, string> = {};
+    if (height.trim()) patch["height"] = height.trim();
+    if (weight.trim()) patch["weight"] = weight.trim();
+    if (pulse.trim()) patch["pulse"] = pulse.trim();
+    if (temperature.trim()) patch["temperature"] = temperature.trim();
+
+    updateSession({ vitals: { ...(session?.vitals ?? {}), ...patch } });
+    await Promise.all(
+      Object.entries(patch).map(([k, v]) => patientKioskApi.saveAnswer(k, v, "typed")),
+    );
   };
 
   const cards: KioskSubStep[] = [
@@ -44,7 +72,7 @@ export function VitalsPage() {
           labelKey="kiosk.vitals.height"
           value={height}
           maxLength={3}
-          onChange={(val) => updateVitals("height", val)}
+          onChange={(val) => updateVital("height", val)}
         />
       ),
     },
@@ -55,7 +83,7 @@ export function VitalsPage() {
           labelKey="kiosk.vitals.weight"
           value={weight}
           maxLength={3}
-          onChange={(val) => updateVitals("weight", val)}
+          onChange={(val) => updateVital("weight", val)}
           allowDecimal
         />
       ),
@@ -67,7 +95,7 @@ export function VitalsPage() {
           labelKey="kiosk.vitals.pulse"
           value={pulse}
           maxLength={3}
-          onChange={(val) => updateVitals("pulse", val)}
+          onChange={(val) => updateVital("pulse", val)}
         />
       ),
     },
@@ -78,7 +106,7 @@ export function VitalsPage() {
           labelKey="kiosk.vitals.temperature"
           value={temperature}
           maxLength={4}
-          onChange={(val) => updateVitals("temperature", val)}
+          onChange={(val) => updateVital("temperature", val)}
           allowDecimal
         />
       ),

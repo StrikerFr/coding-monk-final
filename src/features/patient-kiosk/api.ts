@@ -286,12 +286,28 @@ export const patientKioskApi = {
   /** Merges what the patient entered on this screen into the session. */
   async patchSession(patch: Partial<PatientKioskSession>): Promise<PatientKioskSession> {
     const session = current ?? blankSession("hi");
+    const cleanVitals = { ...(session.vitals ?? {}) };
+    if (patch.vitals) {
+      for (const [k, v] of Object.entries(patch.vitals)) {
+        if (v && v.trim()) {
+          cleanVitals[k] = v.trim();
+        }
+      }
+    }
+    const cleanProfile = { ...(session.profile ?? {}) };
+    if (patch.profile) {
+      for (const [k, v] of Object.entries(patch.profile)) {
+        if (v && v.trim()) {
+          cleanProfile[k] = v.trim();
+        }
+      }
+    }
     current = {
       ...session,
       ...patch,
-      profile: { ...session.profile, ...(patch.profile ?? {}) },
+      profile: cleanProfile,
       answers: { ...session.answers, ...(patch.answers ?? {}) },
-      vitals: { ...session.vitals, ...(patch.vitals ?? {}) },
+      vitals: cleanVitals,
     };
     return current;
   },
@@ -316,7 +332,7 @@ export const patientKioskApi = {
     });
 
     for (const [id, value] of Object.entries(session.vitals)) {
-      if (value) await persistAnswer(session, id, value, "typed");
+      if (value && value.trim()) await persistAnswer(session, id, value.trim(), "typed");
     }
     if (session.paperTypes && session.paperTypes.length > 0) {
       await persistAnswer(session, "paperTypes", JSON.stringify(session.paperTypes), "typed");

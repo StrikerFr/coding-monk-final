@@ -53,8 +53,20 @@ export function ReviewPage() {
   const [storedVitals, setStoredVitals] = useState<Record<string, string>>({});
   const [storedPapers, setStoredPapers] = useState<string[]>([]);
   const profile = session?.profile ?? {};
-  
-  const vitals = { ...storedVitals, ...(session?.vitals ?? {}) };
+  const getVital = (key: string): string => {
+    const fromSession = session?.vitals?.[key]?.trim();
+    if (fromSession) return fromSession;
+    const fromStored = storedVitals[key]?.trim();
+    if (fromStored) return fromStored;
+    return "";
+  };
+
+  const vitals = {
+    height: getVital("height"),
+    weight: getVital("weight"),
+    pulse: getVital("pulse"),
+    temperature: getVital("temperature"),
+  };
   const encounterId = session?.encounterId ?? null;
   const allPapers =
     session?.paperTypes && session.paperTypes.length > 0
@@ -86,7 +98,9 @@ export function ReviewPage() {
       const sv: Record<string, string> = {};
       for (const row of rows) {
         if (["height", "weight", "pulse", "temperature"].includes(row.questionId)) {
-          sv[row.questionId] = row.transcript;
+          if (row.transcript.trim()) {
+            sv[row.questionId] = row.transcript.trim();
+          }
         } else if (row.questionId === "paperTypes") {
           try {
             setStoredPapers(JSON.parse(row.transcript));

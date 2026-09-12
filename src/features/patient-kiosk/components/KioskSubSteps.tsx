@@ -29,9 +29,9 @@ export function KioskSubSteps({
   stepId: KioskStepId;
   items: KioskSubStep[];
   /** Runs before leaving this step — use it to store what was entered. */
-  onFinish?: () => void;
+  onFinish?: () => void | Promise<void>;
   showSkip?: boolean;
-  onSkip?: () => void;
+  onSkip?: () => void | Promise<void>;
   note?: KioskTranslationKey;
 }) {
   const { language, t } = useKiosk();
@@ -55,17 +55,17 @@ export function KioskSubSteps({
     if (back) void navigate({ to: back.path });
   };
 
-  const goForward = () => {
+  const goForward = async () => {
     if (!isLast) {
       setIndex((current) => current + 1);
       return;
     }
-    onFinish?.();
+    await onFinish?.();
     if (forward) void navigate({ to: forward.path });
   };
 
-  const skip = () => {
-    onSkip?.();
+  const skip = async () => {
+    await onSkip?.();
     if (forward) void navigate({ to: forward.path });
   };
 
