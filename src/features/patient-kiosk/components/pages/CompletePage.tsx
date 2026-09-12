@@ -120,12 +120,21 @@ export function CompletePage() {
           )}
         </section>
 
-        <Link
-          to="/patient-kiosk"
-          className="mt-8 inline-flex min-h-16 items-center rounded-full border border-border bg-background px-10 text-xl font-semibold transition-colors hover:bg-muted"
-        >
-          <span className={cn(language === "hi" && "deva")}>{t("kiosk.complete.restart")}</span>
-        </Link>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <Link
+            to="/patient"
+            className="inline-flex min-h-14 sm:min-h-16 items-center gap-2 rounded-full bg-primary px-10 text-lg sm:text-xl font-semibold text-primary-foreground shadow-[var(--shadow-lift)] transition-transform hover:-translate-y-0.5"
+          >
+            <span className={cn(language === "hi" && "deva")}>{t("kiosk.complete.restart")}</span>
+          </Link>
+
+          <Link
+            to="/patient-kiosk"
+            className="inline-flex min-h-14 sm:min-h-16 items-center rounded-full border border-border bg-background px-8 text-base sm:text-lg font-semibold transition-colors hover:bg-muted"
+          >
+            <span className={cn(language === "hi" && "deva")}>{t("kiosk.complete.newCheckIn")}</span>
+          </Link>
+        </div>
       </div>
     </KioskStepContainer>
   );

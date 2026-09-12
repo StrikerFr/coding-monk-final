@@ -225,5 +225,6 @@ export const hi: Record<KioskTranslationKey, string> = {
   "kiosk.complete.body": "कृपया बैठ जाएँ। staff member आपको बुलाएँगे।",
   "kiosk.complete.token": "आपका चेक-इन कोड",
   "kiosk.complete.thanks": "धन्यवाद।",
-  "kiosk.complete.restart": "ठीक है",
+  "kiosk.complete.restart": "पूरा हुआ (Done)",
+  "kiosk.complete.newCheckIn": "नया चेक-इन शुरू करें",
 };

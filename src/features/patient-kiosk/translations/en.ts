@@ -229,6 +229,7 @@ export const en = {
   "kiosk.complete.token": "Your check-in code",
   "kiosk.complete.thanks": "Thank you.",
   "kiosk.complete.restart": "Done",
+  "kiosk.complete.newCheckIn": "Start new check-in",
 } as const;
 
 export type KioskTranslationKey = keyof typeof en;
