@@ -228,7 +228,9 @@ export function DocumentsPage() {
 
         <KioskStepNav
           stepId="documents"
+          showSkip
           onContinue={() => updateSession({ paperTypes: none ? [] : selected })}
+          onSkip={() => updateSession({ paperTypes: none ? [] : selected })}
         />
       </div>
     </KioskStepContainer>

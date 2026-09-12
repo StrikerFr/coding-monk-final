@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useKiosk } from "@/features/patient-kiosk/kiosk-context";
 import { stepNumber } from "@/features/patient-kiosk/session";
 import type { KioskTranslationKey } from "@/features/patient-kiosk/translations/en";
+import { savePatientDetails } from "@/lib/clinical/clinical.functions";
 import { KioskChoice } from "../KioskChoice";
 import { KioskNumberPad } from "../KioskNumberPad";
 import { KioskStepContainer } from "../KioskStepContainer";
@@ -101,7 +102,21 @@ export function IdentificationPage() {
           <KioskSubSteps
             stepId="identification"
             items={cards}
-            onFinish={() => updateSession({ profile: { name, age, gender, phone } })}
+            onFinish={() => {
+              updateSession({ profile: { name, age, gender, phone } });
+              if (session?.encounterId) {
+                const ageNum = Number(age);
+                void savePatientDetails({
+                  data: {
+                    encounterId: session.encounterId,
+                    language: session.language,
+                    ...(name.trim() ? { name: name.trim() } : {}),
+                    ...(Number.isFinite(ageNum) && ageNum > 0 ? { age: ageNum } : {}),
+                    ...(phone.trim() ? { phone: phone.trim() } : {}),
+                  },
+                });
+              }
+            }}
           />
         </div>
       </div>

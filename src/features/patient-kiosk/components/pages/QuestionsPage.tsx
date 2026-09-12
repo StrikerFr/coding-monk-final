@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useKiosk } from "@/features/patient-kiosk/kiosk-context";
 import { patientKioskApi } from "@/features/patient-kiosk/api";
 import { stepNumber } from "@/features/patient-kiosk/session";
@@ -34,14 +34,13 @@ export function QuestionsPage() {
   const [questions, setQuestions] = useState<ClinicalFollowUpQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [usedFallback, setUsedFallback] = useState(false);
-  const openingAnswers = session?.answers;
+  const hasLoadedRef = useRef<string | null>(null);
 
   const prepareQuestions = useCallback(async () => {
     setLoading(true);
     setUsedFallback(false);
-    setIndex(0);
     try {
-      const prepared = await patientKioskApi.getClinicalFollowUps(openingAnswers, language);
+      const prepared = await patientKioskApi.getClinicalFollowUps(undefined, language);
       setQuestions(prepared);
     } catch {
       setQuestions(fallbackQuestions(language));
@@ -49,10 +48,12 @@ export function QuestionsPage() {
     } finally {
       setLoading(false);
     }
-  }, [language, openingAnswers]);
+  }, [language]);
 
   useEffect(() => {
-    if (!session) return;
+    const key = `${session?.encounterId}:${language}`;
+    if (!session?.encounterId || hasLoadedRef.current === key) return;
+    hasLoadedRef.current = key;
     void prepareQuestions();
   }, [session?.encounterId, language, prepareQuestions]);
 
@@ -61,8 +62,9 @@ export function QuestionsPage() {
 
   const handleAnswer = useCallback(
     (text: string) => {
-      if (!question) return;
+      if (!question || !text.trim()) return;
       setAnswers((current) => {
+        if (current[question.id] === text) return current;
         const next = { ...current, [question.id]: text };
         void patientKioskApi.saveAnswer(question.id, text, "voice", question.text);
         return next;

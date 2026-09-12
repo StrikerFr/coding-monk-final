@@ -17,6 +17,25 @@ export function VitalsPage() {
   const [pulse, setPulse] = useState(session?.vitals["pulse"] ?? "");
   const [temperature, setTemperature] = useState(session?.vitals["temperature"] ?? "");
 
+  const updateVitals = (key: string, val: string) => {
+    if (key === "height") setHeight(val);
+    if (key === "weight") setWeight(val);
+    if (key === "pulse") setPulse(val);
+    if (key === "temperature") setTemperature(val);
+    updateSession({
+      vitals: {
+        height: key === "height" ? val : height,
+        weight: key === "weight" ? val : weight,
+        pulse: key === "pulse" ? val : pulse,
+        temperature: key === "temperature" ? val : temperature,
+      },
+    });
+  };
+
+  const syncAll = () => {
+    updateSession({ vitals: { height, weight, pulse, temperature } });
+  };
+
   const cards: KioskSubStep[] = [
     {
       id: "height",
@@ -25,7 +44,7 @@ export function VitalsPage() {
           labelKey="kiosk.vitals.height"
           value={height}
           maxLength={3}
-          onChange={setHeight}
+          onChange={(val) => updateVitals("height", val)}
         />
       ),
     },
@@ -36,7 +55,7 @@ export function VitalsPage() {
           labelKey="kiosk.vitals.weight"
           value={weight}
           maxLength={3}
-          onChange={setWeight}
+          onChange={(val) => updateVitals("weight", val)}
           allowDecimal
         />
       ),
@@ -48,7 +67,7 @@ export function VitalsPage() {
           labelKey="kiosk.vitals.pulse"
           value={pulse}
           maxLength={3}
-          onChange={setPulse}
+          onChange={(val) => updateVitals("pulse", val)}
         />
       ),
     },
@@ -59,7 +78,7 @@ export function VitalsPage() {
           labelKey="kiosk.vitals.temperature"
           value={temperature}
           maxLength={4}
-          onChange={setTemperature}
+          onChange={(val) => updateVitals("temperature", val)}
           allowDecimal
         />
       ),
@@ -91,7 +110,8 @@ export function VitalsPage() {
             stepId="vitals"
             items={cards}
             showSkip
-            onFinish={() => updateSession({ vitals: { height, weight, pulse, temperature } })}
+            onFinish={syncAll}
+            onSkip={syncAll}
           />
         </div>
       </div>

@@ -46,7 +46,7 @@ let current: PatientKioskSession | null = null;
 
 function rememberEncounter(encounterId: string) {
   try {
-    window.localStorage.setItem(STORAGE_KEY, encounterId);
+    window.sessionStorage.setItem(STORAGE_KEY, encounterId);
   } catch {
     /* storage unavailable: the session simply will not resume after a reload */
   }
@@ -54,14 +54,15 @@ function rememberEncounter(encounterId: string) {
 
 function rememberedEncounter(): string | undefined {
   try {
-    return window.localStorage.getItem(STORAGE_KEY) ?? undefined;
+    return window.sessionStorage.getItem(STORAGE_KEY) ?? undefined;
   } catch {
     return undefined;
   }
 }
 
-function forgetEncounter() {
+export function forgetEncounter() {
   try {
+    window.sessionStorage.removeItem(STORAGE_KEY);
     window.localStorage.removeItem(STORAGE_KEY);
   } catch {
     /* nothing to clear */
@@ -121,8 +122,11 @@ async function persistAnswer(
 
 export const patientKioskApi = {
   /** Opens the check-in: resumes the patient's open encounter or starts one. */
-  async startSession(language: KioskLanguage = "hi"): Promise<PatientKioskSession> {
-    const remembered = rememberedEncounter();
+  async startSession(language: KioskLanguage = "hi", forceNew = false): Promise<PatientKioskSession> {
+    if (forceNew) {
+      forgetEncounter();
+    }
+    const remembered = forceNew ? undefined : rememberedEncounter();
     const started = await startEncounter({
       data: { language, ...(remembered ? { encounterId: remembered } : {}) },
     });
@@ -144,7 +148,13 @@ export const patientKioskApi = {
         session.profile[answer.questionId] = answer.transcript;
       else if (VITAL_IDS.has(answer.questionId))
         session.vitals[answer.questionId] = answer.transcript;
-      else session.answers[answer.questionId] = answer.transcript;
+      else if (answer.questionId === "paperTypes") {
+        try {
+          session.paperTypes = JSON.parse(answer.transcript);
+        } catch {
+          session.paperTypes = [];
+        }
+      } else session.answers[answer.questionId] = answer.transcript;
       if (answer.status === "confirmed") session.confirmed.push(answer.questionId);
     }
 
@@ -308,10 +318,12 @@ export const patientKioskApi = {
     for (const [id, value] of Object.entries(session.vitals)) {
       if (value) await persistAnswer(session, id, value, "typed");
     }
+    if (session.paperTypes && session.paperTypes.length > 0) {
+      await persistAnswer(session, "paperTypes", JSON.stringify(session.paperTypes), "typed");
+    }
     for (const [id, value] of Object.entries(session.answers)) {
       if (value)
         await confirmAnswer({ data: { encounterId: session.encounterId, questionId: id } });
-      void value;
     }
 
     current = { ...session, syncStatus: "synced", token: session.encounterId.slice(-6) };

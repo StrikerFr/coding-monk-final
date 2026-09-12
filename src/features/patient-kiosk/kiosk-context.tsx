@@ -34,6 +34,8 @@ type KioskValue = {
   completeSession: () => Promise<boolean>;
   /** The patient agreed with the read-back for one question. */
   confirmAnswer: (questionId: string) => Promise<void>;
+  /** Starts a fresh check-in, clearing previous stored state so nothing collides. */
+  startNewSession: (lang?: KioskLanguage) => Promise<PatientKioskSession>;
 };
 
 const KioskContext = createContext<KioskValue | null>(null);
@@ -118,6 +120,13 @@ export function KioskProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const startNewSession = useCallback(async (lang?: KioskLanguage) => {
+    const targetLang = lang ?? language;
+    const fresh = await patientKioskApi.startSession(targetLang, true);
+    setSession(fresh);
+    return fresh;
+  }, [language]);
+
   const value = useMemo<KioskValue>(
     () => ({
       language,
@@ -131,6 +140,7 @@ export function KioskProvider({ children }: { children: ReactNode }) {
       saveSession,
       completeSession,
       confirmAnswer,
+      startNewSession,
     }),
     [
       language,
@@ -142,6 +152,7 @@ export function KioskProvider({ children }: { children: ReactNode }) {
       saveSession,
       completeSession,
       confirmAnswer,
+      startNewSession,
     ],
   );
 

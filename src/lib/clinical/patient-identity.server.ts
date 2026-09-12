@@ -29,8 +29,24 @@ export async function resolveOwnPatientId(): Promise<string> {
     if (session?.userId) {
       const linked = await findPatientByAccount(session.userId);
       if (linked) return linked;
+
+      const claims = session.sessionClaims as Record<string, unknown> | undefined;
+      const claimEmail = typeof claims?.["email"] === "string" ? claims["email"].toLowerCase() : null;
+      const claimName =
+        typeof claims?.["name"] === "string" && claims["name"].trim()
+          ? claims["name"].trim()
+          : typeof claims?.["first_name"] === "string" && claims["first_name"].trim()
+            ? claims["first_name"].trim()
+            : "Patient";
+
+      const newPatientId = `MK-P-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`.toUpperCase();
+      await client.execute({
+        sql: "INSERT INTO patients (id, name, age, language, phone, account_id) VALUES (?,?,?,?,?,?)",
+        args: [newPatientId, claimName, 0, "hi", claimEmail, session.userId],
+      });
+      return newPatientId;
     }
-    const claim = session?.sessionClaims?.["email"];
+    const claim = (session?.sessionClaims as Record<string, unknown> | undefined)?.["email"];
     if (typeof claim === "string" && claim.includes("@")) email = claim.toLowerCase();
   } catch {
     /* no session available: fall through to the demonstration patient */

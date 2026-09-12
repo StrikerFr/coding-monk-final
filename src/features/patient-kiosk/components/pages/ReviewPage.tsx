@@ -50,15 +50,22 @@ export function ReviewPage() {
   const [facts, setFacts] = useState<FactRow[] | null>(null);
   const [readings, setReadings] = useState<DocumentReading[]>([]);
   const [asked, setAsked] = useState<AnswerRow[]>([]);
+  const [storedVitals, setStoredVitals] = useState<Record<string, string>>({});
+  const [storedPapers, setStoredPapers] = useState<string[]>([]);
   const profile = session?.profile ?? {};
   
-  const vitals = session?.vitals ?? {};
+  const vitals = { ...storedVitals, ...(session?.vitals ?? {}) };
   const encounterId = session?.encounterId ?? null;
-  const papers = (session?.paperTypes ?? [])
-    .map((id) => PAPER_LABELS[id])
-    .filter((key): key is KioskTranslationKey => Boolean(key))
-    .map((key) => tIn(language, key))
-    .join(", ");
+  const allPapers =
+    session?.paperTypes && session.paperTypes.length > 0
+      ? session.paperTypes
+      : storedPapers;
+  const papers =
+    allPapers
+      .map((id) => PAPER_LABELS[id])
+      .filter((key): key is KioskTranslationKey => Boolean(key))
+      .map((key) => tIn(language, key))
+      .join(", ") || (readings.length > 0 ? tIn(language, "kiosk.docs.uploaded") : "");
 
   useEffect(() => {
     if (!encounterId) return;
@@ -73,8 +80,22 @@ export function ReviewPage() {
     });
     void patientKioskApi.listStoredAnswers().then((rows) => {
       if (!active) return;
-      const skip = new Set(["name", "age", "gender", "phone", "height", "weight", "pulse", "temperature"]);
+      const skip = new Set(["name", "age", "gender", "phone", "height", "weight", "pulse", "temperature", "paperTypes"]);
       setAsked(rows.filter((row) => !skip.has(row.questionId) && row.transcript.trim().length > 0));
+
+      const sv: Record<string, string> = {};
+      for (const row of rows) {
+        if (["height", "weight", "pulse", "temperature"].includes(row.questionId)) {
+          sv[row.questionId] = row.transcript;
+        } else if (row.questionId === "paperTypes") {
+          try {
+            setStoredPapers(JSON.parse(row.transcript));
+          } catch {
+            /* ignore malformed json */
+          }
+        }
+      }
+      setStoredVitals(sv);
     });
     return () => {
       active = false;
@@ -84,9 +105,11 @@ export function ReviewPage() {
   const groups = Object.entries(
     (facts ?? []).reduce<Record<string, FactRow[]>>((acc, fact) => {
       const key = CATEGORY_LABELS[fact.category] ? fact.category : "OTHER";
-      const duplicate = (acc[key] ?? []).some(
-        (existing) => cleanFactLabel(existing).toLocaleLowerCase() === cleanFactLabel(fact).toLocaleLowerCase(),
-      );
+      const cleanLabel = cleanFactLabel(fact).toLocaleLowerCase();
+      const duplicate = (acc[key] ?? []).some((existing) => {
+        const existingLabel = cleanFactLabel(existing).toLocaleLowerCase();
+        return existingLabel === cleanLabel || (existingLabel.length > 5 && cleanLabel.length > 5 && (existingLabel.includes(cleanLabel) || cleanLabel.includes(existingLabel)));
+      });
       if (duplicate) return acc;
       (acc[key] ??= []).push(fact);
       return acc;

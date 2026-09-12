@@ -188,40 +188,36 @@ export async function resolvePatient(input: {
 }) {
   const client = await db();
   const name = (input.name ?? "").trim();
+  const phone = (input.phone ?? "").trim();
 
-  if (name) {
+  // If a valid phone number is provided, match returning patient by phone
+  if (phone && phone.length >= 7) {
     const existing = await client.execute({
-      sql: "SELECT * FROM patients WHERE lower(name) = lower(?) LIMIT 1",
-      args: [name],
+      sql: "SELECT * FROM patients WHERE phone = ? LIMIT 1",
+      args: [phone],
     });
     const row = existing.rows[0] as Row | undefined;
     if (row) {
       await client.execute({
-        sql: "UPDATE patients SET age = COALESCE(NULLIF(?,0), age), language = ?, phone = COALESCE(?, phone) WHERE id = ?",
-        args: [input.age ?? 0, input.language, input.phone ?? null, text(row["id"])],
+        sql: "UPDATE patients SET name = COALESCE(NULLIF(?,''), name), age = COALESCE(NULLIF(?,0), age), language = ? WHERE id = ?",
+        args: [name, input.age ?? 0, input.language, text(row["id"])],
       });
       return text(row["id"]);
     }
-    const patientId = id("MK-P");
-    await client.execute({
-      sql: "INSERT INTO patients (id, name, age, language, phone) VALUES (?,?,?,?,?)",
-      args: [patientId, name, input.age ?? 0, input.language, input.phone ?? null],
-    });
-    return patientId;
   }
 
-  // No name yet: use the stable synthetic demonstration patient.
+  // Create an isolated patient record for this check-in
+  const patientId = id("MK-P");
   await client.execute({
-    sql: `INSERT INTO patients (id, name, age, language, phone) VALUES ('MK-DEMO-001','Meera Sharma',46,?,NULL)
-          ON CONFLICT (id) DO NOTHING`,
-    args: [input.language],
+    sql: "INSERT INTO patients (id, name, age, language, phone) VALUES (?,?,?,?,?)",
+    args: [patientId, name || "Patient", input.age ?? 0, input.language, phone || null],
   });
-  return "MK-DEMO-001";
+  return patientId;
 }
 
 /* ---------------------------------------------------------------- encounters */
 
-/** Reuses the patient's open encounter, or starts one. Never duplicates. */
+/** Reuses the patient's open encounter if explicitly provided, otherwise creates an isolated one. */
 export async function startEncounter(input: {
   name?: string | undefined;
   age?: number | undefined;
@@ -247,15 +243,6 @@ export async function startEncounter(input: {
   }
 
   const patientId = await resolvePatient(input);
-  const open = await client.execute({
-    sql: "SELECT * FROM encounters WHERE patient_id = ? AND status = 'in-progress' ORDER BY started_at DESC LIMIT 1",
-    args: [patientId],
-  });
-  const openRow = open.rows[0] as Row | undefined;
-  if (openRow) {
-    return { encounterId: text(openRow["id"]), patientId, resumed: true };
-  }
-
   const encounterId = id("MK-E");
   const token = encounterId.slice(-6);
   await client.execute({
@@ -279,33 +266,20 @@ export async function updatePatientDetails(
   if (!row) throw new ClinicalError("NOT_FOUND", "This check-in no longer exists", 404);
   const patientId = text(row["patient_id"]);
   const name = (details.name ?? "").trim();
-
-  if (name && patientId === "MK-DEMO-001") {
-    // A real person typed their own name: move the encounter to their record.
-    const realId = await resolvePatient({
-      name,
-      ...(details.age !== undefined ? { age: details.age } : {}),
-      ...(details.phone !== undefined ? { phone: details.phone } : {}),
-      language: details.language ?? "hi",
-    });
-    await client.execute({
-      sql: "UPDATE encounters SET patient_id = ? WHERE id = ?",
-      args: [realId, encounterId],
-    });
-    return realId;
-  }
+  const phone = (details.phone ?? "").trim();
 
   await client.execute({
     sql: `UPDATE patients SET
             name = COALESCE(NULLIF(?,''), name),
             age = COALESCE(NULLIF(?,0), age),
             phone = COALESCE(NULLIF(?,''), phone),
-            language = COALESCE(NULLIF(?,''), language)
+            language = COALESCE(?, language)
           WHERE id = ?`,
-    args: [name, details.age ?? 0, details.phone ?? "", details.language ?? "", patientId],
+    args: [name, details.age ?? 0, phone || null, details.language ?? null, patientId],
   });
   return patientId;
 }
+
 
 function toEncounter(row: Row): EncounterRow {
   return {
@@ -455,10 +429,24 @@ export async function saveAnswer(input: {
     "patient-kiosk",
   );
 
+  const NON_CLINICAL = new Set([
+    "name",
+    "age",
+    "gender",
+    "phone",
+    "height",
+    "weight",
+    "pulse",
+    "temperature",
+    "paperTypes",
+  ]);
+
   // Candidate extraction. A failure here is reported, never faked.
   let aiError: string | null = null;
   let clarification: string | null = null;
-  if (!previous || corrected) {
+  const isClinical = !NON_CLINICAL.has(input.questionId) && transcript.length >= 3;
+
+  if (isClinical && (!previous || corrected)) {
     try {
       const extraction = await extractFacts({
         questionText: input.questionText,
@@ -467,24 +455,39 @@ export async function saveAnswer(input: {
       });
       clarification = extraction.clarificationQuestion;
 
+      // Stale check: check if the answer's current transcript in DB is still what we processed.
+      // If a newer user keystroke/edit has already updated this answer, discard the stale extraction!
+      const currentAns = await client.execute({
+        sql: "SELECT transcript FROM intake_answers WHERE id = ?",
+        args: [answerId],
+      });
+      const latestTranscript = text(currentAns.rows[0]?.["transcript"]).trim();
+      if (latestTranscript !== transcript) {
+        return { answerId, candidates: [], clarification: null, aiError: null };
+      }
+
+      // Atomically clean up prior unconfirmed facts for this answer before inserting new ones
+      await client.execute({
+        sql: "DELETE FROM clinical_facts WHERE answer_id = ? AND status != 'confirmed'",
+        args: [answerId],
+      });
+
       // The same point can come up in several answers ("headache" in the
       // concern and again in the story). It is recorded once per check-in.
       const already = await client.execute({
-        sql: `SELECT category, field, display_value FROM clinical_facts
-              WHERE encounter_id = ? AND status != 'discarded'`,
-        args: [input.encounterId],
+        sql: `SELECT category, display_value FROM clinical_facts
+              WHERE encounter_id = ? AND status != 'discarded' AND answer_id != ?`,
+        args: [input.encounterId, answerId],
       });
       const seen = new Set(
         already.rows.map((row) =>
-          `${text((row as Row)["category"])}|${text((row as Row)["field"])}|${text(
-            (row as Row)["display_value"],
-          )}`
+          `${text((row as Row)["category"])}|${text((row as Row)["display_value"])}`
             .trim()
             .toLowerCase(),
         ),
       );
       const newFacts = extraction.facts.filter((fact) => {
-        const key = `${fact.category}|${fact.field}|${fact.displayValue}`.trim().toLowerCase();
+        const key = `${fact.category}|${fact.displayValue}`.trim().toLowerCase();
         if (seen.has(key)) return false;
         seen.add(key);
         return true;

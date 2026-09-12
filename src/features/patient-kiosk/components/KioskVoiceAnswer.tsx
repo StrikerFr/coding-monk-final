@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Keyboard, Loader2, Mic, Square, Volume2 } from "lucide-react";
 import { useKiosk } from "@/features/patient-kiosk/kiosk-context";
 import type { KioskTranslationKey } from "@/features/patient-kiosk/translations/en";
@@ -26,6 +26,31 @@ export function KioskVoiceAnswer({
   const playback = useVoicePlayback();
   const voice = useVoiceInput({ language, onTranscript: onAnswer });
   const [typing, setTyping] = useState(false);
+  const [typedText, setTypedText] = useState(answer ?? "");
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!typing) {
+      setTypedText(answer ?? "");
+    }
+  }, [answer, typing]);
+
+  const handleTypedChange = (val: string) => {
+    const text = val.slice(0, 1000);
+    setTypedText(text);
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = setTimeout(() => {
+      onAnswer(text);
+    }, 500);
+  };
+
+  const handleBlur = () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
+    onAnswer(typedText);
+  };
 
   const questionText = suppliedQuestionText ?? (questionKey ? tIn(language, questionKey) : "");
   const questionId = questionKey ?? questionText;
@@ -40,7 +65,7 @@ export function KioskVoiceAnswer({
           ? "kiosk.voice.error.failed"
           : null;
 
-  const shownAnswer = voice.transcript || answer || "";
+  const shownAnswer = voice.transcript || (typing ? typedText : answer) || "";
 
   return (
     <section className="rounded-4xl border border-border bg-surface px-6 py-8 sm:px-10 sm:py-10">
@@ -82,8 +107,9 @@ export function KioskVoiceAnswer({
           <textarea
             id={`typed-${questionId}`}
             lang={language}
-            value={answer ?? ""}
-            onChange={(event) => onAnswer(event.target.value.slice(0, 1000))}
+            value={typedText}
+            onChange={(event) => handleTypedChange(event.target.value)}
+            onBlur={handleBlur}
             maxLength={1000}
             rows={4}
             placeholder={t("kiosk.voice.typePlaceholder")}
@@ -95,7 +121,10 @@ export function KioskVoiceAnswer({
           />
           <button
             type="button"
-            onClick={() => setTyping(false)}
+            onClick={() => {
+              handleBlur();
+              setTyping(false);
+            }}
             className="mt-5 inline-flex min-h-12 items-center gap-3 rounded-full border border-border px-6 text-base font-semibold transition-colors hover:bg-muted"
           >
             <Mic aria-hidden="true" className="size-5 text-primary" />

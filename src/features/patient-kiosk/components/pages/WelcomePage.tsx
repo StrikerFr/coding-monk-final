@@ -11,10 +11,11 @@ import { ListenButton } from "@/components/a11y";
 
 /** P0 — the calm beginning of the patient journey. */
 export function WelcomePage() {
-  const { t, tIn, language, bilingual, goToStep } = useKiosk();
+  const { t, tIn, language, bilingual, goToStep, startNewSession } = useKiosk();
   const navigate = useNavigate();
 
-  const start = () => {
+  const start = async () => {
+    await startNewSession(language);
     goToStep("consent");
     void navigate({ to: "/patient-kiosk/consent" });
   };

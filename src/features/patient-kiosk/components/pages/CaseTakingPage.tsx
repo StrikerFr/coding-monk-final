@@ -17,7 +17,9 @@ export function CaseTakingPage() {
 
   const record = (text: string) => {
     setStory(text);
-    void patientKioskApi.saveAnswer("story", text, "voice");
+    if (text.trim() && text.trim() !== session?.answers["story"]) {
+      void patientKioskApi.saveAnswer("story", text.trim(), "voice");
+    }
   };
 
   return (
