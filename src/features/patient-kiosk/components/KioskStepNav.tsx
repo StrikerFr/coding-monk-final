@@ -63,14 +63,14 @@ export function KioskStepNav({
   };
 
   return (
-    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3 sm:mt-5 sm:pt-4">
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3 sm:mt-5 sm:pt-4">
       <div className="flex flex-wrap items-center gap-3">
         {extraLeft}
         {(back || onBack) && (
           <button
             type="button"
             onClick={handleBack}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-background px-4 text-sm font-semibold transition-colors hover:bg-muted sm:min-h-12 sm:px-5 sm:text-base"
+          className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 text-sm font-semibold text-white/80 transition-colors hover:bg-white/20 sm:min-h-12 sm:px-5 sm:text-base"
           >
             <ArrowLeft aria-hidden="true" className="size-4 sm:size-5" />
             <span className={cn(deva && "deva")}>{t("kiosk.nav.back")}</span>
@@ -83,7 +83,7 @@ export function KioskStepNav({
               onSkip?.();
               if (forward) void navigate({ to: forward.path });
             }}
-            className="inline-flex min-h-10 items-center rounded-full px-3 text-xs font-semibold text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline sm:text-sm"
+            className="inline-flex min-h-10 items-center rounded-full px-3 text-xs font-semibold text-white/50 underline-offset-4 transition-colors hover:text-white/90 hover:underline sm:text-sm"
           >
             <span className={cn(deva && "deva")}>{t("kiosk.nav.skip")}</span>
           </button>

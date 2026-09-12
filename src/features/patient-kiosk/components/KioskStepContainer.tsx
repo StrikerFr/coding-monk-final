@@ -21,7 +21,7 @@ export function KioskStepContainer({
   return (
     <div
       className={cn(
-        "mx-auto flex w-full max-w-[1100px] flex-1 flex-col justify-between px-4 py-3 sm:px-8 sm:py-5",
+        "mx-auto flex w-full max-w-[1280px] flex-1 flex-col justify-between px-4 py-3 sm:px-8 sm:py-5",
         className,
       )}
     >
@@ -34,7 +34,7 @@ export function KioskStepContainer({
           />
         </div>
       )}
-      <div className="my-auto flex flex-1 flex-col justify-center">{children}</div>
+      <div className="flex flex-1 flex-col">{children}</div>
     </div>
   );
 }
