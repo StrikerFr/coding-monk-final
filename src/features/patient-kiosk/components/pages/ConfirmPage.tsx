@@ -19,16 +19,16 @@ export function ConfirmPage() {
         <KioskText
           tkey="kiosk.confirm.heading"
           as="h1"
-          className="text-3xl font-semibold sm:text-4xl"
-          secondaryClassName="text-xl font-normal"
+          className="text-2xl font-semibold sm:text-3xl"
+          secondaryClassName="text-lg font-normal"
         />
         <KioskText
           tkey="kiosk.confirm.support"
           as="p"
-          className="mt-4 text-lg text-muted-foreground"
+          className="mt-1 text-sm sm:text-base text-muted-foreground"
         />
 
-        <div className="mt-8 space-y-6">
+        <div className="mt-3 sm:mt-4 space-y-3">
           <KioskSummarySection
             titleKey="kiosk.review.details"
             rows={[
@@ -46,7 +46,7 @@ export function ConfirmPage() {
             />
             <Link
               to="/patient-kiosk/case-taking"
-              className="mt-4 inline-flex min-h-14 items-center rounded-full border border-border bg-background px-6 text-base font-semibold transition-colors hover:bg-muted"
+              className="mt-2.5 inline-flex min-h-11 items-center rounded-full border border-border bg-background px-5 text-sm font-semibold transition-colors hover:bg-muted"
             >
               <span className={cn(language === "hi" && "deva")}>{t("kiosk.confirm.change")}</span>
             </Link>

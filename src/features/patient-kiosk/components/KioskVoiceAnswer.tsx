@@ -83,17 +83,17 @@ export function KioskVoiceAnswer({
   const shownAnswer = voice.transcript || (typing ? typedText : answer) || "";
 
   return (
-    <section className="rounded-4xl border border-border bg-surface px-6 py-8 sm:px-10 sm:py-10">
-      <div className="flex flex-wrap items-start justify-between gap-6">
+    <section className="rounded-3xl border border-border bg-surface px-4 py-4 sm:px-6 sm:py-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         {questionKey ? (
           <KioskText
             tkey={questionKey}
             as="h2"
-            className="max-w-2xl text-2xl font-semibold sm:text-3xl"
-            secondaryClassName="text-lg font-normal"
+            className="max-w-xl text-xl font-semibold sm:text-2xl"
+            secondaryClassName="text-base font-normal"
           />
         ) : (
-          <h2 lang={language} className={cn("max-w-2xl text-2xl font-semibold sm:text-3xl", language === "hi" && "deva")}>
+          <h2 lang={language} className={cn("max-w-xl text-xl font-semibold sm:text-2xl", language === "hi" && "deva")}>
             {questionText}
           </h2>
         )}
@@ -102,9 +102,9 @@ export function KioskVoiceAnswer({
           onClick={() =>
             playback.isSpeaking ? playback.stop() : void playback.speak(questionText, questionId)
           }
-          className="inline-flex min-h-14 items-center gap-3 rounded-full border border-border bg-background px-6 text-base font-semibold transition-colors hover:bg-muted"
+          className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border bg-background px-4 text-xs font-semibold transition-colors hover:bg-muted sm:text-sm"
         >
-          <Volume2 aria-hidden="true" className="size-5 text-primary" />
+          <Volume2 aria-hidden="true" className="size-4 text-primary" />
           <span className={cn(language === "hi" && "deva")}>
             {playback.isSpeaking ? t("kiosk.voice.stopListening") : t("kiosk.voice.listen")}
           </span>
@@ -112,10 +112,10 @@ export function KioskVoiceAnswer({
       </div>
 
       {typing ? (
-        <div className="mt-8 text-left">
+        <div className="mt-3 text-left">
           <label
             htmlFor={`typed-${questionId}`}
-            className={cn("text-lg font-semibold", language === "hi" && "deva")}
+            className={cn("text-sm font-semibold sm:text-base", language === "hi" && "deva")}
           >
             {t("kiosk.voice.typeLabel")}
           </label>
@@ -126,10 +126,10 @@ export function KioskVoiceAnswer({
             onChange={(event) => handleTypedChange(event.target.value)}
             onBlur={handleBlur}
             maxLength={1000}
-            rows={4}
+            rows={3}
             placeholder={t("kiosk.voice.typePlaceholder")}
             className={cn(
-              "mt-4 w-full rounded-3xl border border-border bg-background px-5 py-4 text-xl leading-relaxed",
+              "mt-2 w-full rounded-2xl border border-border bg-background px-4 py-2.5 text-base leading-relaxed sm:text-lg",
               "focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none",
               language === "hi" && "deva",
             )}
@@ -140,31 +140,31 @@ export function KioskVoiceAnswer({
               handleBlur();
               setTyping(false);
             }}
-            className="mt-5 inline-flex min-h-12 items-center gap-3 rounded-full border border-border px-6 text-base font-semibold transition-colors hover:bg-muted"
+            className="mt-2.5 inline-flex min-h-9 items-center gap-2 rounded-full border border-border px-4 text-xs font-semibold transition-colors hover:bg-muted sm:text-sm"
           >
-            <Mic aria-hidden="true" className="size-5 text-primary" />
+            <Mic aria-hidden="true" className="size-4 text-primary" />
             <span className={cn(language === "hi" && "deva")}>{t("kiosk.voice.useVoice")}</span>
           </button>
         </div>
       ) : (
         <>
-          <div className="mt-8 flex flex-col items-center gap-5 text-center">
+          <div className="mt-3 flex flex-col items-center gap-2 text-center sm:mt-4">
             <button
               type="button"
               onClick={() => (listening ? void voice.stop() : void voice.start())}
               disabled={working}
               aria-label={listening ? t("kiosk.voice.stopSpeaking") : t("kiosk.voice.speak")}
               className={cn(
-                "relative inline-flex size-28 items-center justify-center rounded-full text-primary-foreground transition-transform duration-300",
+                "relative inline-flex size-20 items-center justify-center rounded-full text-primary-foreground transition-transform duration-300 sm:size-22",
                 "bg-primary shadow-[var(--shadow-lift)] hover:-translate-y-0.5 active:scale-95 disabled:opacity-70",
               )}
             >
               {working ? (
-                <Loader2 aria-hidden="true" className="size-10 animate-spin" />
+                <Loader2 aria-hidden="true" className="size-8 animate-spin sm:size-9" />
               ) : listening ? (
-                <Square aria-hidden="true" className="size-9" />
+                <Square aria-hidden="true" className="size-7 sm:size-8" />
               ) : (
-                <Mic aria-hidden="true" className="size-10" />
+                <Mic aria-hidden="true" className="size-8 sm:size-9" />
               )}
               {listening && (
                 <span
@@ -175,7 +175,7 @@ export function KioskVoiceAnswer({
               )}
             </button>
 
-            <p aria-live="polite" className="min-h-8 text-lg font-semibold">
+            <p aria-live="polite" className="min-h-6 text-sm font-semibold sm:text-base">
               <span className={cn(language === "hi" && "deva")}>
                 {listening
                   ? t("kiosk.voice.listeningNow")
@@ -193,9 +193,9 @@ export function KioskVoiceAnswer({
                 voice.reset();
                 setTyping(true);
               }}
-              className="inline-flex min-h-12 items-center gap-3 rounded-full border border-border bg-background px-6 text-base font-semibold transition-colors hover:bg-muted"
+              className="inline-flex min-h-9 items-center gap-2 rounded-full border border-border bg-background px-4 text-xs font-semibold transition-colors hover:bg-muted sm:text-sm"
             >
-              <Keyboard aria-hidden="true" className="size-5 text-primary" />
+              <Keyboard aria-hidden="true" className="size-4 text-primary" />
               <span className={cn(language === "hi" && "deva")}>
                 {t("kiosk.voice.typeInstead")}
               </span>
@@ -205,38 +205,40 @@ export function KioskVoiceAnswer({
               <KioskText
                 tkey={errorKey}
                 as="p"
-                className="text-base font-medium text-destructive"
+                className="text-xs font-medium text-destructive sm:text-sm"
               />
             )}
             {playback.failed && (
               <KioskText
                 tkey="kiosk.voice.playbackFailed"
                 as="p"
-                className="text-base text-muted-foreground"
+                className="text-xs text-muted-foreground sm:text-sm"
               />
             )}
           </div>
 
           {shownAnswer && (
-            <div className="mt-8 rounded-3xl border border-border bg-background px-6 py-6 text-left">
-              <KioskText
-                tkey="kiosk.voice.yourAnswer"
-                as="p"
-                className="text-sm font-semibold tracking-wide uppercase"
-              />
+            <div className="mt-3 rounded-2xl border border-border bg-background px-4 py-3 text-left">
+              <div className="flex items-center justify-between gap-3">
+                <KioskText
+                  tkey="kiosk.voice.yourAnswer"
+                  as="p"
+                  className="text-xs font-semibold tracking-wide text-muted-foreground uppercase"
+                />
+                <button
+                  type="button"
+                  onClick={() => voice.reset()}
+                  className="inline-flex min-h-8 items-center rounded-full border border-border px-3 text-xs font-semibold transition-colors hover:bg-muted"
+                >
+                  <span className={cn(language === "hi" && "deva")}>{t("kiosk.voice.again")}</span>
+                </button>
+              </div>
               <p
                 lang={language}
-                className={cn("mt-3 text-xl leading-relaxed", language === "hi" && "deva")}
+                className={cn("mt-1.5 text-base font-medium leading-snug line-clamp-3 sm:text-lg", language === "hi" && "deva")}
               >
                 {shownAnswer}
               </p>
-              <button
-                type="button"
-                onClick={() => voice.reset()}
-                className="mt-5 inline-flex min-h-12 items-center rounded-full border border-border px-6 text-base font-semibold transition-colors hover:bg-muted"
-              >
-                <span className={cn(language === "hi" && "deva")}>{t("kiosk.voice.again")}</span>
-              </button>
             </div>
           )}
         </>

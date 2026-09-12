@@ -104,16 +104,16 @@ export function DocumentsPage() {
         <KioskText
           tkey="kiosk.docs.heading"
           as="h1"
-          className="text-3xl font-semibold sm:text-4xl"
-          secondaryClassName="text-xl font-normal"
+          className="text-2xl font-semibold sm:text-3xl"
+          secondaryClassName="text-lg font-normal"
         />
         <KioskText
           tkey="kiosk.docs.support"
           as="p"
-          className="mt-4 text-lg text-muted-foreground"
+          className="mt-1 text-sm sm:text-base text-muted-foreground"
         />
 
-        <div className="mt-8 space-y-4">
+        <div className="mt-3 sm:mt-4 grid gap-2.5 sm:grid-cols-2">
           {PAPERS.map((paper) => (
             <KioskChoice
               key={paper.id}
@@ -135,22 +135,50 @@ export function DocumentsPage() {
         {encounterId ? (
           <section
             aria-labelledby="kiosk-upload-heading"
-            className="mt-10 rounded-2xl border border-border bg-surface p-6"
+            className="mt-3 sm:mt-4 rounded-2xl border border-border bg-surface p-4 sm:p-5"
           >
             <h2 id="kiosk-upload-heading" className="sr-only">
               Add a photo of your papers
             </h2>
-            <KioskText
-              tkey="kiosk.docs.uploadHeading"
-              as="p"
-              className="text-xl font-semibold"
-              secondaryClassName="text-base font-normal"
-            />
-            <KioskText
-              tkey="kiosk.docs.uploadSupport"
-              as="p"
-              className="mt-2 text-base text-muted-foreground"
-            />
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <KioskText
+                  tkey="kiosk.docs.uploadHeading"
+                  as="p"
+                  className="text-base font-semibold sm:text-lg"
+                  secondaryClassName="text-sm font-normal"
+                />
+                <KioskText
+                  tkey="kiosk.docs.uploadSupport"
+                  as="p"
+                  className="mt-0.5 text-xs sm:text-sm text-muted-foreground"
+                />
+              </div>
+
+              <button
+                type="button"
+                disabled={busy !== null}
+                onClick={() => fileInput.current?.click()}
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm sm:text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-70"
+              >
+                {busy ? (
+                  <Loader2 aria-hidden="true" className="size-4 animate-spin" />
+                ) : (
+                  <Upload aria-hidden="true" className="size-4" />
+                )}
+                <KioskText
+                  tkey={
+                    busy === "upload"
+                      ? "kiosk.docs.uploading"
+                      : busy === "read"
+                        ? "kiosk.docs.reading"
+                        : "kiosk.docs.uploadButton"
+                  }
+                  as="span"
+                  secondaryClassName="text-sm font-normal"
+                />
+              </button>
+            </div>
 
             <input
               ref={fileInput}
@@ -162,46 +190,23 @@ export function DocumentsPage() {
                 if (file) void handleFile(file);
               }}
             />
-            <button
-              type="button"
-              disabled={busy !== null}
-              onClick={() => fileInput.current?.click()}
-              className="mt-5 inline-flex min-h-14 items-center gap-3 rounded-xl bg-primary px-6 text-lg font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-70"
-            >
-              {busy ? (
-                <Loader2 aria-hidden="true" className="size-5 animate-spin" />
-              ) : (
-                <Upload aria-hidden="true" className="size-5" />
-              )}
-              <KioskText
-                tkey={
-                  busy === "upload"
-                    ? "kiosk.docs.uploading"
-                    : busy === "read"
-                      ? "kiosk.docs.reading"
-                      : "kiosk.docs.uploadButton"
-                }
-                as="span"
-                secondaryClassName="text-base font-normal"
-              />
-            </button>
 
             {error ? (
-              <p role="status" className="mt-4 text-base text-destructive">
-                <KioskText tkey={error} as="span" secondaryClassName="text-base" />
+              <p role="status" className="mt-3 text-sm text-destructive">
+                <KioskText tkey={error} as="span" secondaryClassName="text-sm" />
               </p>
             ) : null}
 
             {documents.length > 0 ? (
-              <ul className="mt-6 space-y-3">
+              <ul className="mt-3 space-y-2">
                 {documents.map((row) => (
                   <li
                     key={row.id}
-                    className="flex items-start gap-3 rounded-xl border border-border bg-background px-4 py-3"
+                    className="flex items-start gap-2.5 rounded-xl border border-border bg-background px-3 py-2 text-sm"
                   >
-                    <FileText aria-hidden="true" className="mt-0.5 size-5 text-muted-foreground" />
+                    <FileText aria-hidden="true" className="mt-0.5 size-4 text-muted-foreground" />
                     <div className="min-w-0">
-                      <p className="truncate text-base font-semibold">{row.fileName}</p>
+                      <p className="truncate font-semibold">{row.fileName}</p>
                       <KioskText
                         tkey={
                           row.status === "FAILED"
@@ -213,8 +218,8 @@ export function DocumentsPage() {
                               : "kiosk.docs.reading"
                         }
                         as="p"
-                        className="text-sm text-muted-foreground"
-                        secondaryClassName="text-sm"
+                        className="text-xs text-muted-foreground"
+                        secondaryClassName="text-xs"
                       />
                     </div>
                   </li>
@@ -224,11 +229,10 @@ export function DocumentsPage() {
           </section>
         ) : null}
 
-        <KioskText tkey="kiosk.docs.note" as="p" className="mt-8 text-base text-muted-foreground" />
-
         <KioskStepNav
           stepId="documents"
           showSkip
+          note="kiosk.docs.note"
           onContinue={() => updateSession({ paperTypes: none ? [] : selected })}
           onSkip={() => updateSession({ paperTypes: none ? [] : selected })}
         />

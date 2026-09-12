@@ -23,81 +23,82 @@ export function ConsentPage() {
   return (
     <KioskStepContainer step={stepNumber("consent")}>
       <div className="mx-auto max-w-3xl">
-        <span className="inline-flex items-center gap-3 rounded-full border border-border bg-surface px-5 py-2 text-base font-semibold">
-          <ShieldCheck aria-hidden="true" className="size-5 text-primary" />
+        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1 text-xs font-semibold sm:text-sm">
+          <ShieldCheck aria-hidden="true" className="size-4 text-primary" />
           <KioskText tkey="kiosk.step.consent" as="span" showSecondary={false} speak={false} />
         </span>
 
         <KioskText
           tkey="kiosk.consent.heading"
           as="h1"
-          className="mt-6 text-3xl font-semibold sm:text-4xl"
-          secondaryClassName="text-xl font-normal"
+          className="mt-2 text-2xl font-semibold sm:text-3xl"
+          secondaryClassName="text-base sm:text-lg font-normal"
         />
         <KioskText
           tkey="kiosk.consent.support"
           as="p"
-          className="mt-4 text-lg text-muted-foreground"
+          className="mt-1 text-sm text-muted-foreground sm:text-base"
         />
 
         {declined ? (
-          <div className="mt-10 rounded-4xl border border-border bg-surface px-8 py-12 text-center">
+          <div className="mt-6 rounded-3xl border border-border bg-surface px-6 py-8 text-center">
             <KioskText
               tkey="kiosk.consent.declinedTitle"
               as="p"
-              className="text-2xl font-semibold sm:text-3xl"
+              className="text-xl font-semibold sm:text-2xl"
             />
             <KioskText
               tkey="kiosk.consent.declinedBody"
               as="p"
-              className="mt-4 text-lg text-muted-foreground"
+              className="mt-2 text-base text-muted-foreground"
             />
             <Link
               to="/patient-kiosk"
-              className="mt-10 inline-flex min-h-16 items-center rounded-full border border-border bg-background px-10 text-xl font-semibold transition-colors hover:bg-muted"
+              className="mt-6 inline-flex min-h-12 items-center rounded-full border border-border bg-background px-8 text-base font-semibold transition-colors hover:bg-muted"
             >
               <span className={cn(language === "hi" && "deva")}>{t("kiosk.stub.back")}</span>
             </Link>
           </div>
         ) : (
           <>
-            <ul className="mt-8 space-y-4">
+            <ul className="mt-3.5 space-y-2.5">
               {POINTS.map((key, index) => (
                 <li
                   key={key}
-                  className="flex items-start gap-5 rounded-3xl border border-border bg-surface px-6 py-5"
+                  className="flex items-start gap-3.5 rounded-2xl border border-border bg-surface px-4 py-3 sm:px-5 sm:py-3.5"
                 >
                   <span
                     aria-hidden="true"
-                    className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary tabular-nums"
+                    className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary tabular-nums sm:size-8"
                   >
                     {index + 1}
                   </span>
                   <KioskText
                     tkey={key}
                     as="span"
-                    className="text-lg leading-relaxed sm:text-xl"
-                    secondaryClassName="text-base"
+                    className="text-base leading-snug sm:text-lg"
+                    secondaryClassName="text-sm font-normal"
                   />
                 </li>
               ))}
             </ul>
 
-            <button
-              type="button"
-              onClick={() => {
-                updateSession({ consentStatus: "declined" });
-                setDeclined(true);
-              }}
-              className="mt-8 inline-flex min-h-14 items-center rounded-full border border-border bg-background px-6 text-base font-semibold transition-colors hover:bg-muted"
-            >
-              <span className={cn(language === "hi" && "deva")}>{t("kiosk.consent.decline")}</span>
-            </button>
-
             <KioskStepNav
               stepId="consent"
               continueKey="kiosk.consent.agree"
               onContinue={() => updateSession({ consentStatus: "granted" })}
+              extraLeft={
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateSession({ consentStatus: "declined" });
+                    setDeclined(true);
+                  }}
+                  className="inline-flex min-h-11 items-center rounded-full border border-border bg-background px-4 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:text-sm"
+                >
+                  <span className={cn(language === "hi" && "deva")}>{t("kiosk.consent.decline")}</span>
+                </button>
+              }
             />
           </>
         )}

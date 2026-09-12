@@ -71,11 +71,11 @@ export function KioskSubSteps({
 
   return (
     <div>
-      <p aria-live="polite" className={cn("text-base text-muted-foreground", deva && "deva")}>
+      <p aria-live="polite" className={cn("text-xs sm:text-sm text-muted-foreground", deva && "deva")}>
         {t("kiosk.nav.card", { current: index + 1, total: items.length })}
       </p>
 
-      <div className="mt-3 flex gap-2" aria-hidden="true">
+      <div className="mt-1.5 flex gap-1.5" aria-hidden="true">
         {items.map((entry, position) => (
           <span
             key={entry.id}
@@ -87,19 +87,19 @@ export function KioskSubSteps({
         ))}
       </div>
 
-      <div key={item.id} className="animate-rise mt-8">
+      <div key={item.id} className="animate-rise mt-3 sm:mt-4">
         {item.content}
       </div>
 
-      <div className="mt-10 flex flex-col gap-6 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-4">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3 sm:mt-5 sm:pt-4">
+        <div className="flex flex-wrap items-center gap-3">
           {(back || !isFirst) && (
             <button
               type="button"
               onClick={goBack}
-              className="inline-flex min-h-14 items-center gap-2 rounded-full border border-border bg-background px-6 text-base font-semibold transition-colors hover:bg-muted"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-background px-4 text-sm font-semibold transition-colors hover:bg-muted sm:min-h-12 sm:px-5 sm:text-base"
             >
-              <ArrowLeft aria-hidden="true" className="size-5" />
+              <ArrowLeft aria-hidden="true" className="size-4 sm:size-5" />
               <span className={cn(deva && "deva")}>{t("kiosk.nav.back")}</span>
             </button>
           )}
@@ -107,13 +107,13 @@ export function KioskSubSteps({
             <button
               type="button"
               onClick={skip}
-              className="inline-flex min-h-14 items-center rounded-full px-4 text-base font-semibold text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              className="inline-flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline sm:min-h-12 sm:text-base"
             >
               <span className={cn(deva && "deva")}>{t("kiosk.nav.skip")}</span>
             </button>
           )}
           {note && (
-            <p className={cn("max-w-md text-base text-muted-foreground", deva && "deva")}>
+            <p className={cn("max-w-md text-xs sm:text-sm text-muted-foreground", deva && "deva")}>
               {t(note)}
             </p>
           )}
@@ -124,9 +124,9 @@ export function KioskSubSteps({
           onClick={goForward}
           disabled={item.canContinue === false}
           className={cn(
-            "group inline-flex min-h-16 items-center justify-center gap-4 rounded-full bg-primary px-10",
-            "text-xl font-semibold text-primary-foreground shadow-[var(--shadow-lift)]",
-            "transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50",
+            "group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-primary px-7",
+            "text-base font-semibold text-primary-foreground shadow-[var(--shadow-lift)]",
+            "transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50 sm:min-h-13 sm:px-9 sm:text-lg",
           )}
         >
           <span className={cn(deva && "deva")}>
@@ -134,7 +134,7 @@ export function KioskSubSteps({
           </span>
           <ArrowRight
             aria-hidden="true"
-            className="size-6 transition-transform group-hover:translate-x-1"
+            className="size-5 transition-transform group-hover:translate-x-1"
           />
         </button>
       </div>

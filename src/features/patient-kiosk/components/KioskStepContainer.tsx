@@ -19,9 +19,14 @@ export function KioskStepContainer({
   className?: string;
 }) {
   return (
-    <div className={cn("mx-auto w-full max-w-[1200px] px-6 py-10 sm:px-10 lg:py-14", className)}>
+    <div
+      className={cn(
+        "mx-auto flex w-full max-w-[1100px] flex-1 flex-col justify-between px-4 py-3 sm:px-8 sm:py-5",
+        className,
+      )}
+    >
       {progress !== "none" && (
-        <div className="animate-rise flex flex-wrap items-center justify-between gap-4">
+        <div className="animate-rise mb-3 flex flex-wrap items-center justify-between gap-3 sm:mb-4">
           <KioskProgress
             currentStep={step}
             variant={progress}
@@ -29,7 +34,7 @@ export function KioskStepContainer({
           />
         </div>
       )}
-      <div className="mt-8">{children}</div>
+      <div className="my-auto flex flex-1 flex-col justify-center">{children}</div>
     </div>
   );
 }

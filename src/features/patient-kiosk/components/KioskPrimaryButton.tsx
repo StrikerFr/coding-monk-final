@@ -25,23 +25,23 @@ export function KioskPrimaryButton({
       onClick={onClick}
       {...speakable(tIn(language, tkey))}
       className={cn(
-        "group inline-flex min-h-[5rem] w-full max-w-xl items-center justify-center gap-5 rounded-full bg-primary px-12",
+        "group inline-flex min-h-13 sm:min-h-15 w-full max-w-md items-center justify-center gap-4 rounded-full bg-primary px-8 sm:px-10",
         "text-primary-foreground shadow-[var(--shadow-lift)] transition-all duration-300 ease-[var(--ease-calm)]",
-        "hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] lg:min-h-[6rem]",
+        "hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]",
         className,
       )}
     >
-      <span className="flex flex-wrap items-baseline justify-center gap-x-4">
+      <span className="flex flex-wrap items-baseline justify-center gap-x-3">
         <span
           lang={language}
-          className={cn("text-3xl font-semibold lg:text-4xl", language === "hi" && "deva")}
+          className={cn("text-2xl font-semibold sm:text-3xl", language === "hi" && "deva")}
         >
           {tIn(language, tkey)}
         </span>
         {bilingual && (
           <span
             lang={other}
-            className={cn("text-xl font-medium opacity-80 lg:text-2xl", other === "hi" && "deva")}
+            className={cn("text-base font-medium opacity-80 sm:text-lg", other === "hi" && "deva")}
           >
             {tIn(other, tkey)}
           </span>
@@ -50,7 +50,7 @@ export function KioskPrimaryButton({
       {withArrow && (
         <ArrowRight
           aria-hidden="true"
-          className="size-8 shrink-0 transition-transform duration-300 ease-[var(--ease-calm)] group-hover:translate-x-1.5"
+          className="size-6 shrink-0 transition-transform duration-300 ease-[var(--ease-calm)] group-hover:translate-x-1.5"
         />
       )}
     </button>

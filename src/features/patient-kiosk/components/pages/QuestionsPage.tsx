@@ -79,32 +79,32 @@ export function QuestionsPage() {
         <KioskText
           tkey="kiosk.questions.heading"
           as="h1"
-          className="text-3xl font-semibold sm:text-4xl"
-          secondaryClassName="text-xl font-normal"
+          className="text-2xl font-semibold sm:text-3xl"
+          secondaryClassName="text-lg font-normal"
         />
         <KioskText
           tkey="kiosk.questions.support"
           as="p"
-          className="mt-4 text-lg leading-relaxed text-muted-foreground"
+          className="mt-1 text-sm sm:text-base leading-relaxed text-muted-foreground"
         />
 
         {loading && (
-          <div role="status" aria-live="polite" className="mt-10 rounded-3xl border border-border bg-surface px-6 py-10 text-center">
-            <p className={cn("text-xl font-semibold", language === "hi" && "deva")}>
+          <div role="status" aria-live="polite" className="mt-6 rounded-3xl border border-border bg-surface px-6 py-8 text-center">
+            <p className={cn("text-lg font-semibold", language === "hi" && "deva")}>
               {t("kiosk.questions.preparing")}
             </p>
           </div>
         )}
 
         {!loading && usedFallback && (
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-muted px-5 py-4">
-            <p className={cn("text-base text-muted-foreground", language === "hi" && "deva")}>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-muted px-4 py-3">
+            <p className={cn("text-sm text-muted-foreground", language === "hi" && "deva")}>
               {t("kiosk.questions.problem")}
             </p>
             <button
               type="button"
               onClick={() => void prepareQuestions()}
-              className="min-h-12 rounded-full border border-border bg-background px-6 text-base font-semibold hover:bg-muted"
+              className="min-h-10 rounded-full border border-border bg-background px-5 text-sm font-semibold hover:bg-muted"
             >
               <span className={cn(language === "hi" && "deva")}>{t("kiosk.questions.retry")}</span>
             </button>
@@ -113,7 +113,7 @@ export function QuestionsPage() {
 
         {question && (
           <>
-            <div className="mt-8">
+            <div className="mt-3 sm:mt-4">
               <KioskVoiceAnswer
                 key={question.id}
                 questionText={question.text}
@@ -127,29 +127,21 @@ export function QuestionsPage() {
                 stepId="questions"
                 canContinue={Boolean(answers[question.id])}
                 note="kiosk.voice.note"
+                onBack={index > 0 ? () => setIndex((c) => c - 1) : undefined}
                 onContinue={() => updateSession({ answers })}
               />
             ) : (
-              <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-                <KioskText
-                  tkey="kiosk.voice.note"
-                  as="p"
-                  className="max-w-md text-base text-muted-foreground"
-                />
-                <button
-                  type="button"
-                  onClick={() => setIndex((current) => current + 1)}
-                  disabled={!answers[question.id]}
-                  className={cn(
-                    "inline-flex min-h-16 items-center rounded-full bg-primary px-10 text-xl font-semibold text-primary-foreground",
-                    "shadow-[var(--shadow-lift)] transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50",
-                  )}
-                >
-                  <span className={cn(language === "hi" && "deva")}>
-                    {t("kiosk.questions.next")}
-                  </span>
-                </button>
-              </div>
+              <KioskStepNav
+                stepId="questions"
+                continueKey="kiosk.questions.next"
+                canContinue={Boolean(answers[question.id])}
+                note="kiosk.voice.note"
+                onBack={index > 0 ? () => setIndex((c) => c - 1) : undefined}
+                onContinue={() => {
+                  setIndex((current) => current + 1);
+                  return false;
+                }}
+              />
             )}
           </>
         )}

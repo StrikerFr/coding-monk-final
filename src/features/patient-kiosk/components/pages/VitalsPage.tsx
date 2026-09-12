@@ -119,25 +119,21 @@ export function VitalsPage() {
         <KioskText
           tkey="kiosk.vitals.heading"
           as="h1"
-          className="text-3xl font-semibold sm:text-4xl"
-          secondaryClassName="text-xl font-normal"
+          className="text-2xl font-semibold sm:text-3xl"
+          secondaryClassName="text-lg font-normal"
         />
         <KioskText
           tkey="kiosk.vitals.support"
           as="p"
-          className="mt-4 text-lg text-muted-foreground"
-        />
-        <KioskText
-          tkey="kiosk.vitals.note"
-          as="p"
-          className="mt-4 text-base text-muted-foreground"
+          className="mt-1 text-sm sm:text-base text-muted-foreground"
         />
 
-        <div className="mt-8">
+        <div className="mt-3 sm:mt-4">
           <KioskSubSteps
             stepId="vitals"
             items={cards}
             showSkip
+            note="kiosk.vitals.note"
             onFinish={syncAll}
             onSkip={syncAll}
           />

@@ -70,11 +70,11 @@ export function IdentificationPage() {
     {
       id: "gender",
       content: (
-        <fieldset className="rounded-4xl border border-border bg-surface px-6 py-6">
+        <fieldset className="rounded-3xl border border-border bg-surface px-4 py-3 sm:px-5 sm:py-4">
           <legend className="px-2">
-            <KioskText tkey="kiosk.id.gender" as="span" className="text-lg font-semibold" />
+            <KioskText tkey="kiosk.id.gender" as="span" className="text-base font-semibold sm:text-lg" />
           </legend>
-          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <div className="mt-2.5 grid gap-2.5 sm:grid-cols-3">
             {GENDERS.map((option) => (
               <KioskChoice
                 key={option.id}
@@ -109,12 +109,12 @@ export function IdentificationPage() {
         <KioskText
           tkey="kiosk.id.heading"
           as="h1"
-          className="text-3xl font-semibold sm:text-4xl"
-          secondaryClassName="text-xl font-normal"
+          className="text-2xl font-semibold sm:text-3xl"
+          secondaryClassName="text-lg font-normal"
         />
-        <KioskText tkey="kiosk.id.support" as="p" className="mt-4 text-lg text-muted-foreground" />
+        <KioskText tkey="kiosk.id.support" as="p" className="mt-1 text-sm sm:text-base text-muted-foreground" />
 
-        <div className="mt-8">
+        <div className="mt-3 sm:mt-4">
           <KioskSubSteps
             stepId="identification"
             items={cards}

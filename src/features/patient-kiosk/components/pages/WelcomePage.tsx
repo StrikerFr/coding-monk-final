@@ -21,59 +21,61 @@ export function WelcomePage() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-6 py-10 sm:px-10 lg:py-14">
-      <div className="grid flex-1 items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+    <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-4 py-4 sm:px-8 sm:py-6">
+      <div className="grid flex-1 items-center gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
         {/* Message column */}
         <div className="animate-rise flex flex-col items-start">
-          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
+          <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.24em] text-primary">
             {tIn("en", "kiosk.welcome.eyebrow").toUpperCase()}
           </p>
 
-          <h1 className="mt-6 text-4xl font-semibold leading-[1.1] sm:text-5xl lg:text-6xl xl:text-[4.5rem]">
+          <h1 className="mt-3 text-3xl font-semibold leading-[1.12] sm:text-4xl lg:text-5xl">
             <KioskText
               tkey="kiosk.welcome.heading"
-              secondaryClassName="mt-4 text-2xl font-medium sm:text-3xl"
+              secondaryClassName="mt-2 text-xl font-medium sm:text-2xl"
             />
           </h1>
 
           <KioskText
             tkey="kiosk.welcome.support"
             as="p"
-            className="mt-8 max-w-2xl text-xl leading-relaxed sm:text-2xl"
-            secondaryClassName="mt-2 text-lg sm:text-xl"
+            className="mt-3 max-w-xl text-base leading-relaxed sm:text-lg text-muted-foreground"
+            secondaryClassName="mt-1 text-sm sm:text-base"
           />
 
-          <KioskPrimaryButton tkey="kiosk.welcome.start" onClick={start} className="mt-10" />
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <KioskPrimaryButton tkey="kiosk.welcome.start" onClick={start} className="max-w-xs" />
 
-          <Link
-            to="/patient-kiosk/conversation"
-            className="mt-5 inline-flex min-h-16 items-center gap-3 rounded-full border border-border bg-background px-8 text-lg font-semibold transition-colors hover:bg-muted"
-          >
-            <MessageCircle aria-hidden="true" className="size-5 text-primary" />
-            <span className={cn(language === "hi" && "deva")}>{t("kiosk.welcome.talk")}</span>
-          </Link>
+            <Link
+              to="/patient-kiosk/conversation"
+              className="inline-flex min-h-13 sm:min-h-15 items-center gap-2.5 rounded-full border border-border bg-background px-6 text-base font-semibold transition-colors hover:bg-muted"
+            >
+              <MessageCircle aria-hidden="true" className="size-5 text-primary" />
+              <span className={cn(language === "hi" && "deva")}>{t("kiosk.welcome.talk")}</span>
+            </Link>
+          </div>
 
           <ListenButton
-            className="mt-5"
+            className="mt-3"
             size="large"
             text={`${t("kiosk.welcome.heading")}. ${t("kiosk.welcome.support")}. ${t("kiosk.welcome.speakHint")}`}
           />
 
-          <div className="mt-7 flex items-start gap-3.5">
+          <div className="mt-3.5 flex items-start gap-3">
             <span
               aria-hidden="true"
-              className="grid size-11 shrink-0 place-items-center rounded-full bg-accent"
+              className="grid size-9 shrink-0 place-items-center rounded-full bg-accent"
             >
-              <Mic className="size-5 text-secondary" />
+              <Mic className="size-4 text-secondary" />
             </span>
-            <div className={cn("text-lg leading-relaxed", language === "hi" && "deva")}>
+            <div className={cn("text-sm sm:text-base leading-relaxed", language === "hi" && "deva")}>
               {bilingual ? (
                 <>
                   <p lang="en">{tIn("en", "kiosk.welcome.speakHint")}</p>
                   <p lang="en" className="text-muted-foreground">
                     {tIn("en", "kiosk.welcome.typeHint")}
                   </p>
-                  <p lang="hi" className="deva mt-2">
+                  <p lang="hi" className="deva mt-1">
                     {tIn("hi", "kiosk.welcome.speakHint")}
                   </p>
                   <p lang="hi" className="deva text-muted-foreground">
@@ -89,11 +91,11 @@ export function WelcomePage() {
             </div>
           </div>
 
-          <KioskProgress currentStep={1} variant="quiet" className="mt-9" />
+          <KioskProgress currentStep={1} variant="quiet" className="mt-4" />
         </div>
 
         {/* Visual column */}
-        <figure className="media-frame animate-rise aspect-4/5 w-full max-h-[38rem] lg:aspect-3/4">
+        <figure className="media-frame animate-rise aspect-4/5 w-full max-h-[26rem] lg:aspect-4/5">
           <img
             src={heroPoster}
             alt={t("kiosk.welcome.imageAlt")}
@@ -108,7 +110,7 @@ export function WelcomePage() {
         </figure>
       </div>
 
-      <div className="mt-12 border-t border-border pt-8">
+      <div className="mt-5 border-t border-border pt-4">
         <KioskTrustNote />
       </div>
     </div>

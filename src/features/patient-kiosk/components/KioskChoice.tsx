@@ -29,7 +29,7 @@ export function KioskChoice({
       aria-label={tIn(language, tkey)}
       onClick={onSelect}
       className={cn(
-        "flex min-h-20 w-full items-center justify-between gap-4 rounded-3xl border px-6 py-4 text-left transition-all",
+        "flex min-h-13 sm:min-h-14 w-full items-center justify-between gap-3 rounded-2xl border px-4 py-2.5 sm:px-5 sm:py-3 text-left transition-all",
         selected
           ? "border-primary bg-primary/10 shadow-[var(--shadow-lift)]"
           : "border-border bg-background hover:bg-muted",
@@ -40,17 +40,17 @@ export function KioskChoice({
         tkey={tkey}
         speak={false}
         as="span"
-        className="text-lg font-semibold sm:text-xl"
-        secondaryClassName="text-base font-normal"
+        className="text-base font-semibold sm:text-lg"
+        secondaryClassName="text-sm font-normal"
       />
       <span
         aria-hidden="true"
         className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-full border-2",
+          "flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-full border-2",
           selected ? "border-primary bg-primary text-primary-foreground" : "border-border",
         )}
       >
-        {selected && <Check className="size-5" />}
+        {selected && <Check className="size-4" />}
       </span>
     </button>
   );

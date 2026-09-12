@@ -20,31 +20,31 @@ export function IntroductionPage() {
         <KioskText
           tkey="kiosk.intro.heading"
           as="h1"
-          className="text-3xl font-semibold sm:text-4xl"
-          secondaryClassName="text-xl font-normal"
+          className="text-2xl font-semibold sm:text-3xl"
+          secondaryClassName="text-lg font-normal"
         />
         <KioskText
           tkey="kiosk.intro.support"
           as="p"
-          className="mt-4 text-lg text-muted-foreground"
+          className="mt-1 text-sm sm:text-base text-muted-foreground"
         />
 
-        <ol className="mt-8 grid gap-6 lg:grid-cols-3">
+        <ol className="mt-3 grid gap-3 sm:mt-5 sm:gap-4 lg:grid-cols-3">
           {STEPS.map((step, index) => (
             <li
               key={step.title}
-              className="rounded-4xl border border-border bg-surface px-6 py-8 transition-transform hover:-translate-y-0.5"
+              className="rounded-3xl border border-border bg-surface px-4 py-4 sm:px-5 sm:py-5 transition-transform hover:-translate-y-0.5"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <span
                   aria-hidden="true"
-                  className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary"
+                  className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary"
                 >
-                  <step.icon className="size-6" />
+                  <step.icon className="size-5" />
                 </span>
                 <span
                   aria-hidden="true"
-                  className="text-lg font-semibold text-muted-foreground tabular-nums"
+                  className="text-base font-semibold text-muted-foreground tabular-nums"
                 >
                   {index + 1}
                 </span>
@@ -52,13 +52,13 @@ export function IntroductionPage() {
               <KioskText
                 tkey={step.title}
                 as="h2"
-                className="mt-6 text-xl font-semibold sm:text-2xl"
-                secondaryClassName="text-base font-normal"
+                className="mt-3 text-lg font-semibold sm:text-xl"
+                secondaryClassName="text-sm font-normal"
               />
               <KioskText
                 tkey={step.body}
                 as="p"
-                className="mt-3 text-base leading-relaxed text-muted-foreground"
+                className="mt-1 text-xs sm:text-sm leading-relaxed text-muted-foreground"
               />
             </li>
           ))}

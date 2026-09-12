@@ -35,27 +35,29 @@ export function KioskNumberPad({
   };
 
   return (
-    <div className="rounded-4xl border border-border bg-surface px-6 py-6">
-      <KioskText tkey={labelKey} as="p" className="text-lg font-semibold" />
-      {hintKey && (
-        <KioskText tkey={hintKey} as="p" className="mt-1 text-base text-muted-foreground" />
-      )}
+    <div className="rounded-3xl border border-border bg-surface px-4 py-3 sm:px-5 sm:py-4">
+      <div className="flex items-baseline justify-between gap-2">
+        <KioskText tkey={labelKey} as="p" className="text-base font-semibold sm:text-lg" />
+        {hintKey && (
+          <KioskText tkey={hintKey} as="p" className="text-xs sm:text-sm text-muted-foreground" />
+        )}
+      </div>
 
       <p
         aria-live="polite"
-        className="mt-4 min-h-16 rounded-2xl border border-border bg-background px-5 py-3 text-3xl font-semibold tabular-nums"
+        className="mt-2 flex min-h-11 sm:min-h-12 items-center justify-center rounded-xl sm:rounded-2xl border border-border bg-background px-4 py-1.5 sm:py-2 text-2xl sm:text-3xl font-semibold tabular-nums"
       >
         {value || "—"}
       </p>
 
-      <div className="mt-4 grid grid-cols-3 gap-3">
+      <div className="mt-2.5 sm:mt-3 grid grid-cols-3 gap-1.5 sm:gap-2">
         {DIGITS.map((digit) => (
           <button
             key={digit}
             type="button"
             onClick={() => append(digit)}
             className={cn(
-              "min-h-16 rounded-2xl border border-border bg-background text-2xl font-semibold tabular-nums",
+              "min-h-10 sm:min-h-11 md:min-h-12 rounded-xl sm:rounded-2xl border border-border bg-background text-xl sm:text-2xl font-semibold tabular-nums",
               "transition-colors hover:bg-muted active:scale-95",
               digit === "0" && "col-span-1",
             )}
@@ -68,7 +70,7 @@ export function KioskNumberPad({
             type="button"
             onClick={() => append(".")}
             aria-label="."
-            className="min-h-16 rounded-2xl border border-border bg-background text-2xl font-semibold transition-colors hover:bg-muted active:scale-95"
+            className="min-h-10 sm:min-h-11 md:min-h-12 rounded-xl sm:rounded-2xl border border-border bg-background text-xl sm:text-2xl font-semibold transition-colors hover:bg-muted active:scale-95"
           >
             .
           </button>
@@ -76,7 +78,7 @@ export function KioskNumberPad({
           <button
             type="button"
             onClick={() => onChange("")}
-            className="min-h-16 rounded-2xl border border-border bg-background text-base font-semibold transition-colors hover:bg-muted active:scale-95"
+            className="min-h-10 sm:min-h-11 md:min-h-12 rounded-xl sm:rounded-2xl border border-border bg-background text-xs sm:text-sm font-semibold transition-colors hover:bg-muted active:scale-95"
           >
             <span className={cn(deva && "deva")}>{t("kiosk.pad.clear")}</span>
           </button>
@@ -85,9 +87,9 @@ export function KioskNumberPad({
           type="button"
           onClick={() => onChange(value.slice(0, -1))}
           aria-label={t("kiosk.pad.delete")}
-          className="flex min-h-16 items-center justify-center rounded-2xl border border-border bg-background transition-colors hover:bg-muted active:scale-95"
+          className="flex min-h-10 sm:min-h-11 md:min-h-12 items-center justify-center rounded-xl sm:rounded-2xl border border-border bg-background transition-colors hover:bg-muted active:scale-95"
         >
-          <Delete aria-hidden="true" className="size-6" />
+          <Delete aria-hidden="true" className="size-5" />
         </button>
       </div>
     </div>
