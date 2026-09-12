@@ -306,7 +306,9 @@ const ENCOUNTER_SELECT = `
 
 export async function listEncounters(): Promise<EncounterRow[]> {
   const client = await db();
-  const result = await client.execute(`${ENCOUNTER_SELECT} ORDER BY e.started_at DESC`);
+  const result = await client.execute(
+    `${ENCOUNTER_SELECT} WHERE NOT (lower(p.name) = 'patient' AND (p.age = 0 OR e.chief_complaint IS NULL)) ORDER BY e.started_at DESC`
+  );
   return result.rows.map((row) => toEncounter(row as Row));
 }
 
