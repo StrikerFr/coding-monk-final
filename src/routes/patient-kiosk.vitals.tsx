@@ -1,7 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { VitalsPage } from "@/features/patient-kiosk/components/pages/VitalsPage";
 
 export const Route = createFileRoute("/patient-kiosk/vitals")({
+  beforeLoad: () => {
+    throw redirect({ to: "/patient-kiosk/documents" });
+  },
   head: () => ({
     meta: [
       { title: "Check-in - MediKiosk" },

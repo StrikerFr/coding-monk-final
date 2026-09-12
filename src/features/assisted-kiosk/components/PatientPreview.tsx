@@ -71,7 +71,15 @@ export function PatientPreview({
         <PreviewLine icon={HeartHandshake} label="Assistance" value={patient.assistance} />
         <PreviewLine icon={Languages} label="Language" value={patient.language} />
       </dl>
-      {action}
+      <div className="mt-6 flex flex-col gap-2.5">
+        {action}
+        <Button asChild variant="outline" className="min-h-11 w-full">
+          <Link to="/assisted-kiosk/vitals" search={{ encounterId: patient.id }}>
+            <Stethoscope className="size-4" />
+            Edit / Record Vitals
+          </Link>
+        </Button>
+      </div>
       <p className="mt-5 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
         <strong className="text-foreground">Patient information is private.</strong>
         <br />

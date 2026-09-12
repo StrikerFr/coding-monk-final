@@ -439,6 +439,13 @@ export async function saveAnswer(input: {
     "pulse",
     "temperature",
     "paperTypes",
+    "bp",
+    "bloodPressure",
+    "systolic",
+    "diastolic",
+    "spo2",
+    "respiratoryRate",
+    "bmi",
   ]);
 
   // Candidate extraction. A failure here is reported, never faked.

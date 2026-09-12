@@ -171,6 +171,7 @@ export const hi: Record<KioskTranslationKey, string> = {
 
   "kiosk.vitals.heading": "कुछ माप",
   "kiosk.vitals.support": "staff member यह भर सकते हैं। आप इस कदम को छोड़ भी सकते हैं।",
+  "kiosk.vitals.bp": "रक्तचाप (बीपी)",
   "kiosk.vitals.height": "लंबाई (cm)",
   "kiosk.vitals.weight": "वज़न (kg)",
   "kiosk.vitals.pulse": "नाड़ी प्रति मिनट",

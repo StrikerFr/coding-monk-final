@@ -62,11 +62,15 @@ export function ReviewPage() {
   };
 
   const vitals = {
-    height: getVital("height"),
-    weight: getVital("weight"),
+    bp: getVital("bp") || getVital("bloodPressure"),
     pulse: getVital("pulse"),
     temperature: getVital("temperature"),
+    height: getVital("height"),
+    weight: getVital("weight"),
   };
+  const hasVitals = Boolean(
+    vitals.bp || vitals.pulse || vitals.temperature || vitals.height || vitals.weight,
+  );
   const encounterId = session?.encounterId ?? null;
   const allPapers =
     session?.paperTypes && session.paperTypes.length > 0
@@ -92,12 +96,24 @@ export function ReviewPage() {
     });
     void patientKioskApi.listStoredAnswers().then((rows) => {
       if (!active) return;
-      const skip = new Set(["name", "age", "gender", "phone", "height", "weight", "pulse", "temperature", "paperTypes"]);
+      const skip = new Set([
+        "name",
+        "age",
+        "gender",
+        "phone",
+        "height",
+        "weight",
+        "pulse",
+        "temperature",
+        "bp",
+        "bloodPressure",
+        "paperTypes",
+      ]);
       setAsked(rows.filter((row) => !skip.has(row.questionId) && row.transcript.trim().length > 0));
 
       const sv: Record<string, string> = {};
       for (const row of rows) {
-        if (["height", "weight", "pulse", "temperature"].includes(row.questionId)) {
+        if (["height", "weight", "pulse", "temperature", "bp", "bloodPressure"].includes(row.questionId)) {
           if (row.transcript.trim()) {
             sv[row.questionId] = row.transcript.trim();
           }
@@ -235,15 +251,18 @@ export function ReviewPage() {
             </section>
           ) : null}
 
-          <KioskSummarySection
-            titleKey="kiosk.review.vitals"
-            rows={[
-              { labelKey: "kiosk.vitals.height", value: vitals["height"] ?? "" },
-              { labelKey: "kiosk.vitals.weight", value: vitals["weight"] ?? "" },
-              { labelKey: "kiosk.vitals.pulse", value: vitals["pulse"] ?? "" },
-              { labelKey: "kiosk.vitals.temperature", value: vitals["temperature"] ?? "" },
-            ]}
-          />
+          {hasVitals && (
+            <KioskSummarySection
+              titleKey="kiosk.review.vitals"
+              rows={[
+                ...(vitals["bp"] ? [{ labelKey: "kiosk.vitals.bp" as const, value: vitals["bp"] }] : []),
+                ...(vitals["pulse"] ? [{ labelKey: "kiosk.vitals.pulse" as const, value: vitals["pulse"] }] : []),
+                ...(vitals["temperature"] ? [{ labelKey: "kiosk.vitals.temperature" as const, value: vitals["temperature"] }] : []),
+                ...(vitals["height"] ? [{ labelKey: "kiosk.vitals.height" as const, value: vitals["height"] }] : []),
+                ...(vitals["weight"] ? [{ labelKey: "kiosk.vitals.weight" as const, value: vitals["weight"] }] : []),
+              ]}
+            />
+          )}
           <KioskSummarySection
             titleKey="kiosk.review.papers"
             rows={[{ labelKey: "kiosk.docs.heading", value: papers }]}

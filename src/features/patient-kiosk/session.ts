@@ -86,7 +86,6 @@ export const KIOSK_STEPS: readonly KioskStep[] = [
   { id: "case-taking", path: "/patient-kiosk/case-taking", labelKey: "kiosk.step.caseTaking" },
   { id: "confirm", path: "/patient-kiosk/confirm", labelKey: "kiosk.step.confirm" },
   { id: "questions", path: "/patient-kiosk/questions", labelKey: "kiosk.step.questions" },
-  { id: "vitals", path: "/patient-kiosk/vitals", labelKey: "kiosk.step.vitals" },
   { id: "documents", path: "/patient-kiosk/documents", labelKey: "kiosk.step.documents" },
   { id: "processing", path: "/patient-kiosk/processing", labelKey: "kiosk.step.processing" },
   { id: "review", path: "/patient-kiosk/review", labelKey: "kiosk.step.review" },

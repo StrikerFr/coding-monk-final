@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { useKiosk } from "@/features/patient-kiosk/kiosk-context";
 import { patientKioskApi } from "@/features/patient-kiosk/api";
 import { stepNumber } from "@/features/patient-kiosk/session";
@@ -89,7 +90,8 @@ export function QuestionsPage() {
         />
 
         {loading && (
-          <div role="status" aria-live="polite" className="mt-6 rounded-3xl border border-border bg-surface px-6 py-8 text-center">
+          <div role="status" aria-live="polite" className="mt-6 flex flex-col items-center justify-center gap-3 rounded-3xl border border-border bg-surface px-6 py-10 text-center">
+            <Loader2 aria-hidden="true" className="size-8 animate-spin text-primary" />
             <p className={cn("text-lg font-semibold", language === "hi" && "deva")}>
               {t("kiosk.questions.preparing")}
             </p>
@@ -113,7 +115,24 @@ export function QuestionsPage() {
 
         {question && (
           <>
-            <div className="mt-3 sm:mt-4">
+            {questions.length > 1 && (
+              <div className="mt-2.5 flex items-center justify-between text-xs sm:text-sm text-muted-foreground font-medium">
+                <span>{t("kiosk.nav.card", { current: index + 1, total: questions.length })}</span>
+                <div className="flex gap-1.5" aria-hidden="true">
+                  {questions.map((_, i) => (
+                    <span
+                      key={i}
+                      className={cn(
+                        "h-1.5 w-6 rounded-full transition-colors duration-300",
+                        i <= index ? "bg-primary" : "bg-border",
+                      )}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div key={question.id} className="animate-rise mt-2.5 sm:mt-3">
               <KioskVoiceAnswer
                 key={question.id}
                 questionText={question.text}
@@ -128,7 +147,13 @@ export function QuestionsPage() {
                 canContinue={Boolean(answers[question.id])}
                 note="kiosk.voice.note"
                 onBack={index > 0 ? () => setIndex((c) => c - 1) : undefined}
-                onContinue={() => updateSession({ answers })}
+                onContinue={async () => {
+                  const currentAnswer = answers[question.id];
+                  if (currentAnswer) {
+                    await patientKioskApi.saveAnswer(question.id, currentAnswer, "voice", question.text);
+                  }
+                  await updateSession({ answers });
+                }}
               />
             ) : (
               <KioskStepNav
@@ -137,7 +162,11 @@ export function QuestionsPage() {
                 canContinue={Boolean(answers[question.id])}
                 note="kiosk.voice.note"
                 onBack={index > 0 ? () => setIndex((c) => c - 1) : undefined}
-                onContinue={() => {
+                onContinue={async () => {
+                  const currentAnswer = answers[question.id];
+                  if (currentAnswer) {
+                    await patientKioskApi.saveAnswer(question.id, currentAnswer, "voice", question.text);
+                  }
                   setIndex((current) => current + 1);
                   return false;
                 }}

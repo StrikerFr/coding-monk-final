@@ -173,6 +173,7 @@ export const en = {
 
   "kiosk.vitals.heading": "Quick measurements",
   "kiosk.vitals.support": "A staff member can enter these. You can also skip this step.",
+  "kiosk.vitals.bp": "Blood pressure (BP)",
   "kiosk.vitals.height": "Height in cm",
   "kiosk.vitals.weight": "Weight in kg",
   "kiosk.vitals.pulse": "Pulse per minute",

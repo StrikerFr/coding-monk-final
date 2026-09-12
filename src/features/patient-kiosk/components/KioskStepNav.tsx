@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useKiosk } from "@/features/patient-kiosk/kiosk-context";
 import { nextStep, previousStep, type KioskStepId } from "@/features/patient-kiosk/session";
@@ -34,14 +34,24 @@ export function KioskStepNav({
 }) {
   const { language, t } = useKiosk();
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
   const deva = language === "hi";
   const back = previousStep(stepId);
   const forward = nextStep(stepId);
 
   const go = async () => {
-    const result = await onContinue?.();
-    if (result === false) return;
-    if (forward) void navigate({ to: forward.path });
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const result = await onContinue?.();
+      if (result === false) {
+        setSubmitting(false);
+        return;
+      }
+      if (forward) await navigate({ to: forward.path });
+    } catch {
+      setSubmitting(false);
+    }
   };
 
   const handleBack = () => {
@@ -88,18 +98,29 @@ export function KioskStepNav({
       <button
         type="button"
         onClick={() => void go()}
-        disabled={!canContinue}
+        disabled={!canContinue || submitting}
         className={cn(
           "group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-primary px-7",
           "text-base font-semibold text-primary-foreground shadow-[var(--shadow-lift)] sm:min-h-13 sm:px-9 sm:text-lg",
           "transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50",
         )}
       >
-        <span className={cn(deva && "deva")}>{t(continueKey)}</span>
-        <ArrowRight
-          aria-hidden="true"
-          className="size-5 transition-transform group-hover:translate-x-1"
-        />
+        {submitting ? (
+          <>
+            <Loader2 aria-hidden="true" className="size-5 animate-spin" />
+            <span className={cn(deva && "deva")}>
+              {language === "hi" ? "कृपया प्रतीक्षा करें..." : "Please wait..."}
+            </span>
+          </>
+        ) : (
+          <>
+            <span className={cn(deva && "deva")}>{t(continueKey)}</span>
+            <ArrowRight
+              aria-hidden="true"
+              className="size-5 transition-transform group-hover:translate-x-1"
+            />
+          </>
+        )}
       </button>
     </div>
   );

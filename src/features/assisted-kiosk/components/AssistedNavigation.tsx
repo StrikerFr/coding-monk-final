@@ -4,7 +4,7 @@ import {
   ClipboardList,
   FileText,
   PlayCircle,
-  Settings,
+  Stethoscope,
 } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 const links = [
   { to: "/assisted-kiosk", label: "Queue", icon: ClipboardList, exact: true },
   { to: "/assisted-kiosk/case-taking", label: "Active intake", icon: PlayCircle },
+  { to: "/assisted-kiosk/vitals", label: "Vitals & BP", icon: Stethoscope },
   { to: "/assisted-kiosk/handoff", label: "Completed", icon: CheckCircle2 },
   { to: "/assisted-kiosk/documents", label: "Documents", icon: FileText },
 ] as const;
@@ -51,16 +52,9 @@ export function AssistedNavigation() {
             className="flex min-h-12 items-center gap-3 rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-surface-sunken"
           >
             <CircleHelp className="size-5" />
-            Help
+            Help & Guidelines
           </Link>
-          <Link
-            to="/assisted-kiosk/vitals"
-            className="flex min-h-12 items-center gap-3 rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-surface-sunken"
-          >
-            <Settings className="size-5" />
-            Settings
-          </Link>
-          <p className="px-3 pt-3 text-xs text-muted-foreground">Synthetic data only</p>
+          <p className="px-3 pt-3 text-xs text-muted-foreground">Staff assisted care</p>
         </div>
       </div>
     </aside>
@@ -71,7 +65,7 @@ export function AssistedMobileNav() {
   return (
     <nav
       aria-label="Mobile assisted care navigation"
-      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
     >
       {links.map((link) => {
         const active =
